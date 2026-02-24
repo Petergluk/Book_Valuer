@@ -1,0 +1,7 @@
+{
+  "name": "Avito Book Valuer",
+  "description": "An application to evaluate and generate listings for used books on Avito. Users can photograph the book's publication data, and an AI will identify the book, suggest a reasonable price and price range, and compose a draft for the ad.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Оценщик книг для Авито",
+  "short_name": "Оценщик Книг",
+  "description": "Приложение для оценки и создания объявлений для подержанных книг на Авито. Сфотографируйте выходные данные книги, и ИИ определит книгу, предложит цену и составит черновик объявления.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

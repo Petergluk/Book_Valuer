@@ -1,0 +1,8 @@
+services:
+  - type: staticSite
+    name: avito-book-valuer
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_GEMINI_API_KEY
+        sync: false
