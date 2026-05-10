@@ -72,21 +72,13 @@ const App: React.FC = () => {
     // Ensure we are on the main view
     if (view !== 'main') navigateTo('main');
 
-    const imagePromises = files.map(file => new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    }));
-
     try {
-      const base64Images = await Promise.all(imagePromises);
       const result = await analyzeBookImage(files, condition, settings.model, settings.prompt);
 
       const newHistoryEntry: HistoryEntry = {
         id: new Date().toISOString(),
         result,
-        images: base64Images,
+        images: [], // Do not save base64 images to prevent localStorage quota limit
         timestamp: Date.now(),
       };
       setHistory(prevHistory => [newHistoryEntry, ...prevHistory].slice(0, 10));
@@ -140,7 +132,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 transition-colors duration-200">
-      <Header onSettingsClick={() => navigateTo('settings')} />
+      <Header onSettingsClick={() => navigateTo('settings')} onHistoryClick={() => navigateTo('history')} />
       <main className="flex-grow container mx-auto px-4 py-8 sm:py-12 flex items-center justify-center">
         {renderMainView()}
       </main>

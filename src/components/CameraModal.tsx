@@ -29,7 +29,7 @@ interface CameraModalProps {
 export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [stream, setStream] = useState<MediaStream | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [capturedImages, setCapturedImages] = useState<File[]>([]);
     const [isFlashing, setIsFlashing] = useState(false);
@@ -46,8 +46,8 @@ export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) 
         const startCamera = async () => {
             try {
                 // Stop any existing stream tracks before starting a new one
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
+                if (streamRef.current) {
+                    streamRef.current.getTracks().forEach(track => track.stop());
                 }
 
                 const constraints: MediaStreamConstraints = {
@@ -71,7 +71,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) 
                     return;
                 }
 
-                setStream(newStream);
+                streamRef.current = newStream;
                 currentStream = newStream;
                 if (videoRef.current) {
                     videoRef.current.srcObject = newStream;
@@ -125,11 +125,11 @@ export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) 
     // Cleanup on unmount (separate effect to ensure we kill the last stream)
     useEffect(() => {
         return () => {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
-    }, [stream]);
+    }, []);
 
 
     const handleCapture = useCallback(() => {

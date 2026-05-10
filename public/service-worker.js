@@ -2,10 +2,9 @@ const CACHE_NAME = 'avito-book-valuer-v2';
 // Cache the application shell. Other assets will be cached by the browser.
 const URLS_TO_CACHE = [
   '/',
-  'index.html',
-  'manifest.json',
-  'icon-192.png',
-  'icon-512.png'
+  '/index.html',
+  '/manifest.json',
+  '/icon.svg'
 ];
 
 self.addEventListener('install', event => {
