@@ -1,8 +1,12 @@
 services:
-  - type: staticSite
-    name: avito-book-valuer
+  - type: web
+    name: book-v
+    env: static
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: ./dist
     envVars:
-      - key: VITE_GEMINI_API_KEY
+      - key: NODE_VERSION
+        value: 18.20.0
+      - key: VITE_API_KEY
         sync: false
+        # Сюда нужно будет вставить API ключ Gemini в панели Render

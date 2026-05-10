@@ -72,6 +72,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) 
                 }
 
                 setStream(newStream);
+                currentStream = newStream;
                 if (videoRef.current) {
                     videoRef.current.srcObject = newStream;
                 }
@@ -111,8 +112,8 @@ export const CameraModal: React.FC<CameraModalProps> = ({ onCapture, onClose }) 
             // but the startCamera logic handles stopping the *old* stream reference it has access to via closure/state if needed,
             // or we rely on the fact that creating a new stream releases the camera lock mostly.
             // However, strictly cleaning up 'stream' from state is safer:
-             if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
+            if (currentStream) {
+                currentStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
