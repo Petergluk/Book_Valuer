@@ -2,11 +2,11 @@ services:
   - type: web
     name: book-v
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: rm -f package-lock.json && npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: NODE_VERSION
-        value: 18.20.0
+        value: 20
       - key: VITE_API_KEY
         sync: false
         # Сюда нужно будет вставить API ключ Gemini в панели Render
