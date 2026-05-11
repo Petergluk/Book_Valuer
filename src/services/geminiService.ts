@@ -149,11 +149,16 @@ const responseSchema = {
 export const analyzeBookImage = async (
   files: File[],
   condition: string,
+  comment: string,
   modelName: string,
   promptTemplate: string,
 ): Promise<BookAnalysisResult> => {
     
-  const userPrompt = promptTemplate.replace('{{condition}}', condition);
+  let userPrompt = promptTemplate.replace('{{condition}}', condition);
+  
+  if (comment && comment.trim() !== '') {
+      userPrompt += `\n\nОбрати внимание на комментарий пользователя: "${comment.trim()}"`;
+  }
 
   // Resize images before converting them to base64
   const optimizedFiles = await Promise.all(files.map(resizeImageForUpload));

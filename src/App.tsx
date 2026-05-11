@@ -64,7 +64,7 @@ const App: React.FC = () => {
 
   // --- Actions ---
 
-  const handleImageAnalysis = useCallback(async (files: File[], condition: string) => {
+  const handleImageAnalysis = useCallback(async (files: File[], condition: string, comment: string) => {
     setStatus(AppStatus.Analyzing);
     setCurrentResult(null);
     setError(null);
@@ -73,7 +73,7 @@ const App: React.FC = () => {
     if (view !== 'main') navigateTo('main');
 
     try {
-      const result = await analyzeBookImage(files, condition, settings.model, settings.prompt);
+      const result = await analyzeBookImage(files, condition, comment, settings.model, settings.prompt);
 
       const newHistoryEntry: HistoryEntry = {
         id: new Date().toISOString(),

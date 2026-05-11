@@ -4,7 +4,7 @@ import { CameraIcon } from './icons/CameraIcon';
 import { CameraModal } from './CameraModal';
 
 interface ImageUploaderProps {
-  onAnalyze: (files: File[], condition: string) => void;
+  onAnalyze: (files: File[], condition: string, comment: string) => void;
   disabled: boolean;
 }
 
@@ -76,6 +76,7 @@ const createThumbnail = (file: File): Promise<string> => {
 export const ImageUploader: React.FC<ImageUploaderProps> = ({ onAnalyze, disabled }) => {
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [condition, setCondition] = useState<string>('Хорошее');
+  const [comment, setComment] = useState<string>('');
   const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -145,7 +146,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onAnalyze, disable
   const handleSubmit = () => {
     const files = thumbnails.map(t => t.file);
     if (files.length > 0) {
-      onAnalyze(files, condition);
+      onAnalyze(files, condition, comment);
     }
   };
 
@@ -221,7 +222,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onAnalyze, disable
                     onClick={() => handleRemoveImage(thumb.id)}
                     disabled={disabled}
                     aria-label={`Удалить изображение ${thumb.file.name}`}
-                    className="absolute top-1 right-1 p-1 bg-black/60 backdrop-blur-sm rounded-full text-white hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 disabled:hidden"
+                    className="absolute top-1 right-1 p-1 bg-black/60 backdrop-blur-sm rounded-full text-white hover:bg-black/80 transition-all opacity-100 disabled:hidden"
                   >
                     <XIcon className="w-4 h-4" />
                   </button>
@@ -254,22 +255,39 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onAnalyze, disable
         )}
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="condition-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Состояние книги
-        </label>
-        <select
-          id="condition-select"
-          value={condition}
-          onChange={(e) => setCondition(e.target.value)}
-          disabled={disabled}
-          className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
-        >
-          <option value="Новая">Новая</option>
-          <option value="Отличное">Отличное</option>
-          <option value="Хорошее">Хорошее</option>
-          <option value="Удовлетворительное">Удовлетворительное</option>
-        </select>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="condition-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Состояние книги
+          </label>
+          <select
+            id="condition-select"
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
+            disabled={disabled}
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+          >
+            <option value="Новая">Новая</option>
+            <option value="Отличное">Отличное</option>
+            <option value="Хорошее">Хорошее</option>
+            <option value="Удовлетворительное">Удовлетворительное</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="user-comment" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Дополнительный комментарий (опционально)
+          </label>
+          <textarea
+            id="user-comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            disabled={disabled}
+            placeholder="Например: 'Обрати внимание на автограф', 'Надорван корешок'..."
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 resize-y"
+            rows={2}
+          />
+        </div>
       </div>
 
        <p className="text-xs text-center text-slate-500 dark:text-slate-400">
