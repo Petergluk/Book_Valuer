@@ -21,13 +21,20 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ history, onViewIte
     let mdContent = '# История оценок книг\n\n';
     history.forEach(item => {
       mdContent += `## ${item.result.bookDetails.title}\n`;
+      mdContent += `**Оценка:** ${item.result.priceAnalysis.suggestedPrice} ₽ (от ${item.result.priceAnalysis.min_price} ₽ до ${item.result.priceAnalysis.max_price} ₽)\n`;
+      mdContent += `**Дата оценки:** ${new Date(item.timestamp).toLocaleString('ru-RU')}\n`;
+      if (item.result.priceAnalysis.findbookUrl) {
+          mdContent += `**FindBook:** ${item.result.priceAnalysis.findbookUrl}\n`;
+      }
+      mdContent += `\n### Текст объявления\n${item.result.adContent.title}\n\n${item.result.adContent.description}\n\n`;
+      mdContent += `**Выходные данные:**\n`;
       mdContent += `**Автор:** ${item.result.bookDetails.author}\n`;
       mdContent += `**Год:** ${item.result.bookDetails.year}\n`;
       mdContent += `**Издательство:** ${item.result.bookDetails.publisher}\n`;
-      mdContent += `**Оценка:** ${item.result.priceAnalysis.suggestedPrice} ₽ (от ${item.result.priceAnalysis.min_price} ₽ до ${item.result.priceAnalysis.max_price} ₽)\n`;
-      mdContent += `**Дата оценки:** ${new Date(item.timestamp).toLocaleString('ru-RU')}\n\n`;
-      mdContent += `### Текст объявления\n**Заголовок:** ${item.result.adContent.title}\n\n${item.result.adContent.description}\n\n`;
-      mdContent += `---\n\n`;
+      if (item.result.bookDetails.circulation) {
+          mdContent += `**Тираж:** ${item.result.bookDetails.circulation}\n`;
+      }
+      mdContent += `\n---\n\n`;
     });
 
     const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });

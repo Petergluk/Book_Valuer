@@ -73,15 +73,50 @@ const App: React.FC = () => {
     if (view !== 'main') navigateTo('main');
 
     try {
+      // Create a tiny thumbnail for history
+      let thumbnailBase64 = '';
+      if (files.length > 0) {
+        thumbnailBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              const maxSize = 100;
+              let width = img.width;
+              let height = img.height;
+              if (width > height) {
+                if (width > maxSize) {
+                  height *= maxSize / width;
+                  width = maxSize;
+                }
+              } else {
+                if (height > maxSize) {
+                  width *= maxSize / height;
+                  height = maxSize;
+                }
+              }
+              canvas.width = width;
+              canvas.height = height;
+              ctx?.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/jpeg', 0.5));
+            };
+            img.src = e.target?.result as string;
+          };
+          reader.readAsDataURL(files[0]);
+        });
+      }
+
       const result = await analyzeBookImage(files, condition, comment, settings.model, settings.prompt);
 
       const newHistoryEntry: HistoryEntry = {
         id: new Date().toISOString(),
         result,
-        images: [], // Do not save base64 images to prevent localStorage quota limit
+        images: thumbnailBase64 ? [thumbnailBase64] : [], 
         timestamp: Date.now(),
       };
-      setHistory(prevHistory => [newHistoryEntry, ...prevHistory].slice(0, 10));
+      setHistory(prevHistory => [newHistoryEntry, ...prevHistory].slice(0, 50));
       
       setCurrentResult(result);
       setStatus(AppStatus.Success);
@@ -132,7 +167,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 transition-colors duration-200">
-      <Header onSettingsClick={() => navigateTo('settings')} onHistoryClick={() => navigateTo('history')} />
+      <Header onHomeClick={() => navigateTo('main')} onSettingsClick={() => navigateTo('settings')} onHistoryClick={() => navigateTo('history')} />
       <main className="flex-grow container mx-auto px-4 py-8 sm:py-12 flex items-center justify-center">
         {renderMainView()}
       </main>

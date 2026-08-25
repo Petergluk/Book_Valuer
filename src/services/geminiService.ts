@@ -164,45 +164,68 @@ export const analyzeBookImage = async (
   const optimizedFiles = await Promise.all(files.map(resizeImageForUpload));
   const imageParts = await Promise.all(optimizedFiles.map(fileToGenerativePart));
 
-  try {
-    // Note: Using ai.models.generateContent with config for systemInstruction
-    const response = await ai.models.generateContent({
-        model: modelName,
-        contents: [
-            ...imageParts,
-            { text: userPrompt }
-        ],
-        config: {
-            systemInstruction: SYSTEM_INSTRUCTION,
-            responseMimeType: "application/json",
-            responseSchema: responseSchema,
-            temperature: 0.4,
-        }
-    });
+  // Determine the sequence of models to try
+  const fallbackChain = [
+    modelName,
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-2.5-flash'
+  ];
+  // Remove duplicates to avoid retrying the same model
+  const modelsToTry = [...new Set(fallbackChain)];
 
-    const jsonText = response.text?.trim();
-    
-    if (!jsonText) {
-        throw new Error("Пустой ответ от модели.");
-    }
+  let lastError: any;
 
-    const cleanedJsonText = jsonText.replace(/^```json\s*|^\s*```|```\s*$/g, '');
-    
-    const result = JSON.parse(cleanedJsonText);
-    
-    if (!result.bookDetails || !result.priceAnalysis || !result.adContent) {
-        throw new Error("Неполный ответ от AI.");
-    }
-    
-    return result as BookAnalysisResult;
+  for (const currentModel of modelsToTry) {
+    try {
+      console.log(`Trying model: ${currentModel}`);
+      const response = await ai.models.generateContent({
+          model: currentModel,
+          contents: [
+              ...imageParts,
+              { text: userPrompt }
+          ],
+          config: {
+              systemInstruction: SYSTEM_INSTRUCTION,
+              responseMimeType: "application/json",
+              responseSchema: responseSchema,
+              temperature: 0.4,
+          }
+      });
 
-  } catch (error: any) {
-    console.error('Ошибка при вызове Gemini API:', error);
-    let errorMessage = "Произошла ошибка при анализе изображения.";
-    if (error.message) {
-        if (error.message.includes('429')) errorMessage = "Слишком много запросов. Подождите немного.";
-        else errorMessage += ` Детали: ${error.message}`;
+      const jsonText = response.text?.trim();
+      
+      if (!jsonText) {
+          throw new Error("Пустой ответ от модели.");
+      }
+
+      const cleanedJsonText = jsonText.replace(/^```json\s*|^\s*```|```\s*$/g, '');
+      const result = JSON.parse(cleanedJsonText);
+      
+      if (!result.bookDetails || !result.priceAnalysis || !result.adContent) {
+          throw new Error("Неполный ответ от AI.");
+      }
+      
+      return result as BookAnalysisResult;
+
+    } catch (error: any) {
+      console.warn(`Ошибка при вызове модели ${currentModel}:`, error);
+      lastError = error;
+      // Do not fallback on certain client errors like Invalid API Key
+      if (error.message && error.message.includes('API key not valid')) {
+        break; 
+      }
+      // Otherwise, continue to the next model in the fallback chain
     }
-    throw new Error(errorMessage);
   }
+
+  // If all failed, throw the last error
+  console.error('Все модели из цепочки завершились с ошибкой.');
+  let errorMessage = "Произошла ошибка при анализе изображения.";
+  if (lastError?.message) {
+      if (lastError.message.includes('429')) errorMessage = "Слишком много запросов. Подождите немного.";
+      else errorMessage += ` Детали: ${lastError.message}`;
+  }
+  throw new Error(errorMessage);
 };
