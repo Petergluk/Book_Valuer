@@ -3,7 +3,7 @@ import { BookAnalysisResult } from '../types';
 
 const getApiKey = () => {
   const viteKey = (import.meta as any).env?.VITE_API_KEY;
-  const procKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+  const procKey = typeof process !== 'undefined' ? (process.env.API_KEY || process.env.VITE_API_KEY) : '';
   return viteKey || procKey || '';
 };
 
