@@ -1,7 +1,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { BookAnalysisResult } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+const getApiKey = () => {
+  const viteKey = (import.meta as any).env?.VITE_API_KEY;
+  const procKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+  return viteKey || procKey || '';
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 const MAX_UPLOAD_DIMENSION = 1500; // Optimized for speed/quality balance
 
