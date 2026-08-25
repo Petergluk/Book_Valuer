@@ -67,13 +67,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ settings, onSave
                   onChange={handleChange}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 dark:text-white"
                 >
-                  <option value="gemini-3-flash-preview">Gemini 3.0 Flash (Рекомендуется)</option>
-                  <option value="gemini-3-pro-preview">Gemini 3.0 Pro (Высокое качество)</option>
+                  <option value="gemini-3.7-flash">Gemini 3.7 Flash (Рекомендуется)</option>
+                  <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Высокое качество)</option>
                   <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                  <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
                   <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
                 </select>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Gemini 3.0 лучше справляется со сложной структурой данных.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Модели Gemini 3-й серии лучше справляются со сложной структурой данных.</p>
             </div>
             
              <div className="space-y-2">
